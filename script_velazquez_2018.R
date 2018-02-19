@@ -140,5 +140,10 @@ xen
 
 multiplot(traits, xen)
 
+### square chi to test the frequencies of germinated seeds and fruit-set fo rmetapopulation ###
+chist_test<-chisq.test(base, correct = T)
+chist_test$stdres # residual standard
+chist_test$p.value # p value
+
 ############# END #############
 
