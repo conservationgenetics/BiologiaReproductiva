@@ -1,4 +1,4 @@
-# BiologiaReproductiva # 
+# The mating system of the wild-to-domesticated complex of Gossypium hirsutum L. is mixed # 
 
 Scripts used in the article: The mating system of the wild-to-domesticated complex of Gossypium hirsutum L. is mixed
 
