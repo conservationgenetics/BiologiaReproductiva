@@ -1,14 +1,26 @@
-#This script was used to the data analysis in the paper: 
-#"title + autors"
-#*Corresponding author: awegier@st.ib.unam.mx 
+#Scripts used in the article: The mating system of the wild-to-domesticated complex of Gossypium hirsutum L. is mixed
 
-# packages 
+# Authors: Rebeca Velázquez-López1✚, Ana Wegier1✚, Valeria Alavez1, 
+#   Javier Pérez-López1, Valeria Vázquez-Barrios1, Denise Arroyo-Lambaer1, 
+#   Alejandro Ponce-Mendoza2, William E. Kunin3
+
+# 1 Laboratorio de Genética de la Conservación, Jardín Botánico, Instituto de Biología, Universidad Nacional Autónoma de México, Ciudad de México, México
+# 2 Comisión Nacional para el Conocimiento y Uso de la Biodiversidad, Ciudad de México, México 
+# 3 Department of Ecology and Evolution, Faculty of Biological Sciences, Leeds University, Leeds, United Kingdom
+
+# ✚ These authors contributed equally to this study.
+
+# Correspondence: rebecavelazquezl@gmail.com, awegier@ib.unam.mx
+
+# Packages 
 library(lme4)
 library(multcomp)
+library(ggplot2)
+library(extrafont)
+library(wesanderson)
 
 ### Outliers detection --- Cooks distance as a multivariate detection method ### 
 
-FinalT2 <- read.delim("clipboard") 
 FinalT2 <- read.csv("FinalT2.csv", header=TRUE, sep=",")
 
 mod <- lm(P.S ~ ., data=FinalT2)
@@ -23,21 +35,22 @@ text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>4*mean(cooksd, na.rm=T
 influential <- as.numeric(names(cooksd)[(cooksd > 4*mean(cooksd, na.rm=T))])  # influential row numbers
 head(FinalT2[influential, ]) # influential observations
 
-#Generalized Linear Model (GLM). The family was chosen according to the distribution of each subset
+### Chi-quare to test the frequencies of germinated seeds and fruit-set fo rmetapopulation ###
+chist_test<-chisq.test(base, correct = T)
+chist_test$stdres # residual standard
+chist_test$p.value # p value
 
-model1 <-glm(value~type, data=data, family = x)
+### Generalized Linear Model (GLM). The family was chosen according to the distribution of each subset ###
+### glmm were used to compare number of ovules, seed-set and seed weight by metapopulation and treatments ###
+
 model1 <- lmer(P.S~Tratamiento+(1|Ind), data= FinalOax)
 anova(model1, test= "Chi")
 summary(model1)
-
-Tukey_glm<- glht(GLMM, linfct = mcp(Tratamiento= "Tukey")) #comparacion multiple 
+Tukey_glm<- glht(model1, linfct = mcp(Tratamiento= "Tukey")) # Treatment/ Metapopulation (comparacion multiple)
 summary(Tukey_glm)
 plot(Tukey_glm)
 
-
 #### PLOTS ####
-
-library(ggplot2)
 
 p1<- ggplot(Base, aes(Tratamiento, Factor_1, fill= Tratamiento))+ 
   geom_boxplot() +xlab("Treatment")+
@@ -58,12 +71,12 @@ p1<- ggplot(Base, aes(Tratamiento, Factor_1, fill= Tratamiento))+
 
 p1
 
-# multiplot fuction #
+# Multiplot fuction #
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   require(grid)
   
-  # Make a list from the ... arguments and plotlist
+  # Make a list from the arguments and plotlist
   plots <- c(list(...), plotlist)
   
   numPlots = length(plots)
@@ -96,16 +109,10 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
-multiplot(p2, p3, p1, p4,p6, p7, p5, p8, cols=2)
+multiplot(p2, p3, p1, p4,p6, p7, p5, p8, cols=2) # The letters "p" mean a plot of seed-set, seed weight or number of ovules
 
-###################### E N D #####################################
 
-#### plots germination ####
-
-library(extrafont)
-library(wesanderson)
-
-# GERMINACION #
+#### Plots germination ####
 # WILD/DOMESTICATED/INTROGRESSION # 
 
 germination<-ggplot(base_1, aes(x = Days, y = Percent, color = Traits))+ geom_line() + 
@@ -125,8 +132,7 @@ germination<-ggplot(base_1, aes(x = Days, y = Percent, color = Traits))+ geom_li
 
 germination
 
-# GERMINACION #
-# AUTOGAMIA/OPEN-POLLINATION/XENOGAMIA #
+# AUTOGAMY/OPEN-POLLINATION/XENOGAMIA #
 
 xen<-ggplot(XA, aes(x = Days, y = Porcent, color = Traits)) +geom_line() + 
   geom_point(na.rm = TRUE)+ scale_size_area()+
@@ -140,10 +146,6 @@ xen
 
 multiplot(traits, xen)
 
-### square chi to test the frequencies of germinated seeds and fruit-set fo rmetapopulation ###
-chist_test<-chisq.test(base, correct = T)
-chist_test$stdres # residual standard
-chist_test$p.value # p value
 
 ############# END #############
 
