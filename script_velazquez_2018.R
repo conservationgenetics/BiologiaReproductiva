@@ -40,15 +40,15 @@ chist_test<-chisq.test(base, correct = T)
 chist_test$stdres # residual standard
 chist_test$p.value # p value
 
-### Generalized Linear Model (GLM). The family was chosen according to the distribution of each subset ###
-### glmm were used to compare number of ovules, seed-set and seed weight by metapopulation and treatments ###
+### Fit Linear Mixed-Effects Models ###
+### Were used to compare number of ovules, seed-set and seed weight by metapopulation and treatments ###
 
-model1 <- lmer(P.S~Tratamiento+(1|Ind), data= FinalOax)
-anova(model1, test= "Chi")
-summary(model1)
-Tukey_glm<- glht(model1, linfct = mcp(Tratamiento= "Tukey")) # Treatment/ Metapopulation (comparacion multiple)
-summary(Tukey_glm)
-plot(Tukey_glm)
+model1 <- lmer(P.S~Tratamiento+(1|Ind), data= FinalOax) # model
+anova(model1, test= "Chi") # test anova
+summary(model1) # summary
+Tukey_glm<- glht(model1, linfct = mcp(Tratamiento= "Tukey")) # Treatment/ Metapopulation (comparation multiple)
+summary(Tukey_glm) # summary glht
+plot(Tukey_glm) # plot glht
 
 #### PLOTS ####
 
@@ -69,7 +69,7 @@ p1<- ggplot(Base, aes(Tratamiento, Factor_1, fill= Tratamiento))+
                              "#984ea3",
                              "#ff7f00"))
 
-p1
+p1 # general plot 
 
 # Multiplot fuction #
 
@@ -113,7 +113,6 @@ multiplot(p2, p3, p1, p4,p6, p7, p5, p8, cols=2) # The letters "p" mean a plot o
 
 
 #### Plots germination ####
-# WILD/DOMESTICATED/INTROGRESSION # 
 
 germination<-ggplot(base_1, aes(x = Days, y = Percent, color = Traits))+ geom_line() + 
   geom_point(na.rm = TRUE)+ scale_size_area()+
@@ -130,9 +129,9 @@ germination<-ggplot(base_1, aes(x = Days, y = Percent, color = Traits))+ geom_li
         legend.title = element_text(colour="black", size=12), axis.title.x=element_blank(),
         axis.text.x=element_blank())
 
-germination
+germination # plot germination for WILD/DOMESTICATED/INTROGRESSION # 
 
-# AUTOGAMY/OPEN-POLLINATION/XENOGAMIA #
+
 
 xen<-ggplot(XA, aes(x = Days, y = Porcent, color = Traits)) +geom_line() + 
   geom_point(na.rm = TRUE)+ scale_size_area()+
@@ -142,7 +141,7 @@ xen<-ggplot(XA, aes(x = Days, y = Porcent, color = Traits)) +geom_line() +
   scale_color_manual(values=wes_palette(n=3, name="Cavalcanti"))+ 
   theme(legend.position="none")
 
-xen
+xen # plot germination for # AUTOGAMY/OPEN-POLLINATION/XENOGAMIA #
 
 multiplot(traits, xen)
 
